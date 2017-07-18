@@ -1,0 +1,51 @@
+.contactIconDiv {
+	float: left;
+}
+.contactPaneDiv, .contactIconDiv, .contactIcon {
+	height: 64px;
+}
+ 
+ .contactIconDiv, .contactIcon {
+ 	width: 64px;
+ }
+ 
+ .contactPaneDiv {
+ 	width: 300px;
+ }
+ 
+.contactPaneDiv {
+	overflow: auto;
+}
+.contactTextDiv {
+	float: left;
+	margin-top: 20px;
+	margin-left: 10px;
+}
+.mirrorDiv, .mirror {
+	width: 320px;
+	height: 240px;
+}
+.mirrorDiv {
+	background-color: #EEEEEE;
+	background-image: url("images/mirror-bg.png");
+	background-position: center;
+	background-repeat: no-repeat;
+}
+ 
+.centeringDiv {
+	text-align: center;
+}
+ 
+.error {
+	color: red;
+	text-weight: bold;
+}
+ 
+.windowToUniverseDiv {
+	width: 100%;
+	height: 100%;
+}
+.windowToUniverse {
+	width: 100%;
+	height: 100%;
+}

@@ -1,0 +1,100 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Webix WebRTC chat</title>
+	<!-- webix -->
+	<link rel="stylesheet" href="//cdn.webix.com/edge/webix.css" type="text/css">
+	<script src="//cdn.webix.com/edge/webix.js" type="text/javascript"></script>
+	<!-- easy rtc -->
+	<script src="//localhost:8080/socket.io/socket.io.js" type="text/javascript"></script>
+	<script src="//localhost:8080/easyrtc/easyrtc.js" type="text/javascript"></script>
+
+	<script src="webrtc.js" type="text/javascript"></script>
+	<link rel="stylesheet" href="app.css" type="text/css">
+</head>
+<body>
+	<script type="text/javascript" charset="utf-8">
+		var config = {
+			server:"localhost:8080",
+			users:function(room, people, me){
+				var list = $$("contactsList");
+				list.clearAll();
+
+				for (var key in people){
+					var v = people[key];
+					list.add ({
+						id: v.easyrtcid,
+						img: "images/contact-default.png",
+						title: v.username
+					});
+				}
+			}
+		};
+
+		var contacts = [
+			{ img : "images/contact-default.png", title : "Alex Brown" },
+			{ img : "images/contact-default.png", title : "Monika Anansi" },
+			{ img : "images/contact-default.png", title : "Dan Rany" }
+		];
+
+		var contactsList = {
+			header : "Rooms",
+			view : "list",
+			id : "contactsList",
+			template : `
+				<div class='contactPaneDiv'>
+					<img class="contactIcon" src="#img#"/>
+					<span class="contactTextDiv">#title#</span>
+				</div>
+			`,
+			item : {
+				height: 90,
+				width: 300,
+			},
+			select:true,
+			on:{ onAfterSelect: (id) => doCall(id) }
+		};
+
+		var chat = {
+			rows:[
+				{ template:"<div class='mirrorDiv'><video id='mirrorVideo' width></div>", height: 240 },
+				{ template: "<div><video id='windowToUniverse'></div>" }
+			]
+		};
+
+		webix.ui({
+			rows : [
+				{ type : "header", template : "Webix WebRTC Chat" },
+				{ cols :[
+					contactsList,
+					chat
+				]}
+			]
+		});
+
+		var win = webix.ui ({
+			view: "window", position:"top", head:false, modal:true,
+			body: {
+				view:"form", rows:[
+					{ view:"text", name:"name", label:"You Name", value:"Anonymous" },
+					{ view:"button", value:"Start !", click:function(){
+						var name = this.getFormView().getValues().name;
+						if (!easyrtc.isNameValid (name))
+							webix.message({ type:"error", text:"Invalid name" });
+						else {
+							this.getTopParentView().hide();
+							config.name = name;
+							doConnect(config);
+						}
+					}}
+				]
+			}
+		});
+
+		win.show();
+		var input = win.getBody().elements.name.getInputNode();
+		input.select(); input.focus();
+	</script>
+
+</body>
+</html>
