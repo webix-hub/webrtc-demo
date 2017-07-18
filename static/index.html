@@ -20,11 +20,17 @@
 				var list = $$("contactsList");
 				list.clearAll();
 
+				if (config.name)
+					list.add({ 
+						id:-1, 
+						img:"images/avatar.jpg", 
+						title: config.name + " ( this is Me )" });
+
 				for (var key in people){
 					var v = people[key];
 					list.add ({
 						id: v.easyrtcid,
-						img: "images/contact-default.png",
+						img: "images/avatar.jpg",
 						title: v.username
 					});
 				}
@@ -48,23 +54,32 @@
 				</div>
 			`,
 			item : {
-				height: 90,
+				height: 80,
 				width: 300,
 			},
-			select:true,
-			on:{ onAfterSelect: (id) => doCall(id) }
+			select:true, scroll:false,
+			on:{ onBeforeSelect: (id) => doCall(id) }
 		};
 
 		var chat = {
-			rows:[
-				{ template:"<div class='mirrorDiv'><video id='mirrorVideo' width></div>", height: 240 },
-				{ template: "<div><video id='windowToUniverse'></div>" }
-			]
+			css:"absarea",
+			template:`<div class='mirrorDiv'><video id='mirrorVideo' width></div>
+						<div class='windowToUniverseDiv'><video id='windowToUniverse'></div>`
 		};
 
 		webix.ui({
 			rows : [
-				{ type : "header", template : "Webix WebRTC Chat" },
+				{ view:"toolbar", cols:[
+					{ view:"label", label : "Webix WebRTC Chat" },
+					{},
+					{ view:"label", id:"status", css:"status", value:"", width: 200 },
+					{ view:"button", id:"endcall", value:"End Call", width: 100, click:function(){
+						$$("endcall").hide();
+						easyrtc.hangupAll();
+						$$("contactsList").unselectAll()
+						$$("status").setValue("");
+					}, hidden:true }
+				]},
 				{ cols :[
 					contactsList,
 					chat
@@ -76,7 +91,7 @@
 			view: "window", position:"top", head:false, modal:true,
 			body: {
 				view:"form", rows:[
-					{ view:"text", name:"name", label:"You Name", value:"Anonymous" },
+					{ view:"text", name:"name", label:"You Name", value:funnyName() },
 					{ view:"button", value:"Start !", click:function(){
 						var name = this.getFormView().getValues().name;
 						if (!easyrtc.isNameValid (name))
@@ -94,6 +109,13 @@
 		win.show();
 		var input = win.getBody().elements.name.getInputNode();
 		input.select(); input.focus();
+
+		function funnyName(){
+			var first = ["Agile", "Strong", "Tricky", "Shiny", "Gloom"];
+			var second = ["Tree", "Cat", "Boss", "User", "Rabbit"];
+
+			return first[Math.floor(Math.random()*first.length)] + " " + second[Math.floor(Math.random()*second.length)];
+		}
 	</script>
 
 </body>
