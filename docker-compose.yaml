@@ -1,0 +1,7 @@
+version: "3"
+services:
+  web:
+    build: .
+    restart: always
+    ports:
+      - "9042:8080"
