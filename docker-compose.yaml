@@ -4,4 +4,4 @@ services:
     build: .
     restart: always
     ports:
-      - "9042:8080"
+      - "127.0.0.1:9042:8080"

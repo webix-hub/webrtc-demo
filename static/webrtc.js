@@ -1,5 +1,5 @@
 var config = {
-	server:"localhost:8080",
+	server:"/",
 	users:function(room, people, me){
 		var list = $$("contactsList");
 		list.clearAll();
