@@ -60,15 +60,22 @@ function doConnect(config) {
 	easyrtc.setSocketUrl(config.server);
 	easyrtc.easyApp("WebixWebRTC", "mirrorVideo", ["windowToUniverse"], function(id){
 		config.$userId = id
-	}, function(){
-		webix.message({ type:"error", text:"Can't connect to WebRTC server" });
+	}, function(code){
+
+  		var text = "Connection failed";
+		if(code === "MEDIA_ERR") text += ". Cannot find a local web camera";
+		if(code === "MEDIA_WARNING") text += ". Video width and height are inappropriate";
+		if(code === "SYSTEM_ERR") text += ". Check your network settings";
+		if(code === "ALREADY_CONNECTED") text += ". You are already connected";
+
+		webix.message({ type:"error", text: text});
 	});
 
 	easyrtc.setPeerClosedListener(function(){
 		if ($$("endcall").isVisible()){
 			$$("endcall").hide();
 			$$("status").setValue("");
-			webix.message("You was disconnected");
+			webix.message("You were disconnected");
 		}
 	});	
 	easyrtc.setAcceptChecker( function(caller, cb) {
@@ -84,9 +91,9 @@ function doConnect(config) {
         };
 
         if( easyrtc.getConnectionCount() > 0 )
-        	webix.confirm({ text:"Drop current call and accept new from " + name + " ?", callback });
+        	webix.confirm({ text:"Drop the current call and accept the new one from " + name + " ?", callback });
         else
-            webix.confirm({ text: "Accept incoming call from " + name + " ?", callback });
+            webix.confirm({ text: "Accept an incoming call from " + name + " ?", callback });
 
     });
 }
@@ -142,8 +149,8 @@ webix.ready(function(){
 		view: "window", position:"top", head:false, modal:true,
 		body: {
 			view:"form", rows:[
-				{ view:"text", name:"name", label:"You Name", value:funnyName() },
-				{ view:"button", value:"Start !", click:function(){
+				{ view:"text", name:"name", label:"Your name", value:funnyName() },
+				{ view:"button", value:"Start!", click:function(){
 					var name = this.getFormView().getValues().name;
 					if (!easyrtc.isNameValid (name))
 						webix.message({ type:"error", text:"Invalid name" });
